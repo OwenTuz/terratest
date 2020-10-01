@@ -86,17 +86,16 @@ func createTerraformOptions(t *testing.T, exampleFolder string) (*terraform.Opti
 	keyPairName := fmt.Sprintf("terratest-asg-scp-example-%s", uniqueID)
 	keyPair := aws.CreateAndImportEC2KeyPair(t, awsRegion, keyPairName)
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code is located
-		TerraformDir: exampleFolder,
-
+		exampleFolder,
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"aws_region":    awsRegion,
 			"instance_name": instanceName,
 			"key_pair_name": keyPairName,
 		},
-	}
+	)
 
 	return terraformOptions, keyPair
 }

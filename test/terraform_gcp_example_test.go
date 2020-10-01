@@ -33,18 +33,17 @@ func TestTerraformGcpExample(t *testing.T) {
 	expectedInstanceName := fmt.Sprintf("terratest-gcp-example-%s", strings.ToLower(random.UniqueId()))
 
 	// website::tag::1::Configure Terraform setting path to Terraform code, bucket name, and instance name.
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code is located
-		TerraformDir: exampleDir,
-
+		exampleDir,
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"gcp_project_id": projectId,
 			"zone":           zone,
 			"instance_name":  expectedInstanceName,
 			"bucket_name":    expectedBucketName,
 		},
-	}
+	)
 
 	// website::tag::5::At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

@@ -21,18 +21,17 @@ func TestTerraformAwsNetworkExample(t *testing.T) {
 	privateSubnetCidr := "10.10.1.0/24"
 	publicSubnetCidr := "10.10.2.0/24"
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/terraform-aws-network-example",
-
+		"../examples/terraform-aws-network-example",
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"main_vpc_cidr":       vpcCidr,
 			"private_subnet_cidr": privateSubnetCidr,
 			"public_subnet_cidr":  publicSubnetCidr,
 			"aws_region":          awsRegion,
 		},
-	}
+	)
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

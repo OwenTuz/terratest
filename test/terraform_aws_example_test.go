@@ -22,19 +22,17 @@ func TestTerraformAwsExample(t *testing.T) {
 	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
 
 	// website::tag::1::Configure Terraform setting path to Terraform code, EC2 instance name, and AWS Region.
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/terraform-aws-example",
-
+		"../examples/terraform-aws-example",
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"instance_name": expectedName,
 		},
-
-		// Environment variables to set when running Terraform
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": awsRegion,
-		},
+	)
+	// Enhance the default options with additional environment variables.
+	terraformOptions.EnvVars = map[string]string{
+		"AWS_DEFAULT_REGION": awsRegion,
 	}
 
 	// website::tag::4::At the end of the test, run `terraform destroy` to clean up any resources that were created

@@ -37,3 +37,38 @@ type Options struct {
 	Logger                   *logger.Logger         // Set a non-default logger that should be used. See the logger package for more info.
 	Parallelism              int                    // Set the parallelism setting for Terraform
 }
+
+// NewTerraformOptions returns a Options object with sensible defaults for retryable errors. The included retryable
+// errors are typical errors that most terraform modules encounter during testing, and are known to self resolve upon
+// retrying.
+func NewTerraformOptionsWithDefaultRetryableErrors(modulePath string, vars map[string]interface{}) *Options {
+	retryableTerraformErrors := map[string]string{
+		// Helm related terraform calls may fail when too many tests run in parallel. While the exact cause is unknown,
+		// this is presumably due to all the network contention involved. Usually a retry resolves the issue.
+		".*read: connection reset by peer.*": "Failed to reach helm charts repository.",
+		".*transport is closing.*":           "Failed to reach Kubernetes API.",
+
+		// `terraform init` frequently fails in CI due to network issues accessing plugins. The reason is unknown, but
+		// eventually these succeed after a few retries.
+		".*unable to verify signature.*":             "Failed to retrieve plugin due to transient network error.",
+		".*unable to verify checksum.*":              "Failed to retrieve plugin due to transient network error.",
+		".*no provider exists with the given name.*": "Failed to retrieve plugin due to transient network error.",
+		".*registry service is unreachable.*":        "Failed to retrieve plugin due to transient network error.",
+		".*Error installing provider.*":              "Failed to retrieve plugin due to transient network error.",
+
+		// Provider bugs where the data after apply is not propagated. This is usually an eventual consistency issue, so
+		// retrying should self resolve it.
+		// See https://github.com/terraform-providers/terraform-provider-aws/issues/12449 for an example.
+		".*Provider produced inconsistent result after apply.*": "Provider eventual consistency error.",
+	}
+	return &Options{
+		TerraformDir:             modulePath,
+		Vars:                     vars,
+		RetryableTerraformErrors: retryableTerraformErrors,
+
+		// These defaults for retry configuration are arbitrary, but has worked well in practice across Gruntwork
+		// modules.
+		MaxRetries:         3,
+		TimeBetweenRetries: 5 * time.Second,
+	}
+}

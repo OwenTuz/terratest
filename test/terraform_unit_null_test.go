@@ -14,10 +14,10 @@ func TestUnitNullInput(t *testing.T) {
 		"nullable_string":    nil,
 		"nonnullable_string": "foo",
 	}
-	options := &terraform.Options{
-		TerraformDir: "./fixtures/terraform-null",
-		Vars:         map[string]interface{}{"foo": foo},
-	}
+	options := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
+		"./fixtures/terraform-null",
+		map[string]interface{}{"foo": foo},
+	)
 	terraform.InitAndApply(t, options)
 
 	fooOut := terraform.OutputMap(t, options, "foo")

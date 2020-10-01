@@ -25,13 +25,12 @@ func TestTerraformAwsRdsExample(t *testing.T) {
 	// Pick a random AWS region to test in. This helps ensure your code works in all regions.
 	awsRegion := aws.GetRandomStableRegion(t, nil, nil)
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/terraform-aws-rds-example",
-
+		"../examples/terraform-aws-rds-example",
 		// Variables to pass to our Terraform code using -var options
 		// "username" and "password" should not be passed from here in a production scenario.
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"name":                 expectedName,
 			"engine_name":          "mysql",
 			"major_engine_version": "5.7",
@@ -44,11 +43,10 @@ func TestTerraformAwsRdsExample(t *testing.T) {
 			"port":                 expectedPort,
 			"database_name":        expectedDatabaseName,
 		},
-
-		// Environment variables to set when running Terraform
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": awsRegion,
-		},
+	)
+	// Enhance the default options with additional environment variables.
+	terraformOptions.EnvVars = map[string]string{
+		"AWS_DEFAULT_REGION": awsRegion,
 	}
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created

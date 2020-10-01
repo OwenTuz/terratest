@@ -25,17 +25,16 @@ func TestTerraformGcpInstanceGroupExample(t *testing.T) {
 	randomValidGcpName := gcp.RandomValidGcpName()
 	clusterSize := 3
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// The path to where our Terraform code instances located
-		TerraformDir: exampleDir,
-
+		exampleDir,
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"gcp_project_id": projectId,
 			"gcp_region":     region,
 			"cluster_name":   randomValidGcpName,
 		},
-	}
+	)
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
 	defer terraform.Destroy(t, terraformOptions)

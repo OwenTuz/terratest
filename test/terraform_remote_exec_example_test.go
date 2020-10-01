@@ -62,19 +62,18 @@ func TestTerraformRemoteExecExample(t *testing.T) {
 		sshAgent := ssh.SshAgentWithKeyPair(t, keyPair.KeyPair)
 		defer sshAgent.Stop()
 
-		terraformOptions := &terraform.Options{
+		terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 			// The path to where our Terraform code is located
-			TerraformDir: terraformDirectory,
-
+			terraformDirectory,
 			// Variables to pass to our Terraform code using -var options
-			Vars: map[string]interface{}{
+			map[string]interface{}{
 				"aws_region":    awsRegion,
 				"instance_name": instanceName,
 				"key_pair_name": keyPairName,
 			},
-
-			SshAgent: sshAgent, // Overrides local SSH agent with our new agent
-		}
+		)
+		// Override local SSH agent with our new agent
+		terraformOptions.SshAgent = sshAgent
 
 		// Save the options and key pair so later test stages can use them
 		test_structure.SaveTerraformOptions(t, terraformDirectory, terraformOptions)

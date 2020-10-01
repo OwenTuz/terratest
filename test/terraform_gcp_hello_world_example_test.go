@@ -19,19 +19,18 @@ func TestTerraformGcpHelloWorldExample(t *testing.T) {
 	// website::tag::2:: Give the example instance a unique name
 	instanceName := fmt.Sprintf("gcp-hello-world-example-%s", strings.ToLower(random.UniqueId()))
 
-	terraformOptions := &terraform.Options{
+	terraformOptions := terraform.NewTerraformOptionsWithDefaultRetryableErrors(
 		// website::tag::3:: The path to where our Terraform code is located
-		TerraformDir: "../examples/terraform-gcp-hello-world-example",
-
+		"../examples/terraform-gcp-hello-world-example",
 		// website::tag::4:: Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
+		map[string]interface{}{
 			"instance_name": instanceName,
 		},
-
-		// website::tag::5:: Variables to pass to our Terraform code using TF_VAR_xxx environment variables
-		EnvVars: map[string]string{
-			"GOOGLE_CLOUD_PROJECT": projectId,
-		},
+	)
+	// Enhance the default options with additional environment variables.
+	// website::tag::5:: Variables to pass to our Terraform code using TF_VAR_xxx environment variables
+	terraformOptions.EnvVars = map[string]string{
+		"GOOGLE_CLOUD_PROJECT": projectId,
 	}
 
 	// website::tag::7:: At the end of the test, run `terraform destroy` to clean up any resources that were created
