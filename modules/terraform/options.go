@@ -3,14 +3,24 @@ package terraform
 import (
 	"time"
 
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/ssh"
 )
 
 // Options for running Terraform commands
 type Options struct {
-	TerraformBinary          string                 // Name of the binary that will be used
-	TerraformDir             string                 // The path to the folder where the Terraform code is defined.
-	Vars                     map[string]interface{} // The vars to pass to Terraform commands using the -var option.
+	TerraformBinary string // Name of the binary that will be used
+	TerraformDir    string // The path to the folder where the Terraform code is defined.
+
+	// The vars to pass to Terraform commands using the -var option. Note that terraform does not support passing `null`
+	// as a variable value through the command line. That is, if you use `map[string]interface{}{"foo": nil}` as `Vars`,
+	// this will translate to the string literal `"null"` being assigned to the variable `foo`. However, nulls in
+	// lists and maps/objects are supported. E.g., the following var will be set as expected (`{ bar = null }`:
+	// map[string]interface{}{
+	//     "foo": map[string]interface{}{"bar": nil},
+	// }
+	Vars map[string]interface{}
+
 	VarFiles                 []string               // The var file paths to pass to Terraform commands using -var-file option.
 	Targets                  []string               // The target resources to pass to the terraform command with -target
 	Lock                     bool                   // The lock option to pass to the terraform command with -lock
@@ -26,4 +36,6 @@ type Options struct {
 	NoStderr                 bool                   // Disable stderr redirection
 	OutputMaxLineSize        int                    // The max size of one line in stdout and stderr (in bytes)
 	Out                      string                 // The path to output a plan file to
+	Logger                   *logger.Logger         // Set a non-default logger that should be used. See the logger package for more info.
+	Parallelism              int                    // Set the parallelism setting for Terraform
 }
