@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// The types in here are a slightly modified version of the types in:
-// https://github.com/hashicorp/terraform/tree/master/command/jsonplan
-// Modifications at:
-// - resource.go:17
-// - resource.go:52
-
 // FormatVersion represents the version of the json format and will be
 // incremented for any change to this format that requires changes to a
 // consuming parser.
