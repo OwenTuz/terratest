@@ -80,7 +80,7 @@ func TestShowAwsJSON(t *testing.T) {
 
 	plannedResources := planObject.PlannedValues.RootModule.Resources
 
-	allowedInstanceTypes := []string{"t2.micro", "m5.large", "m5.xlarge"}
+	allowedInstanceTypes := []string{"t3.micro", "m5.large", "m5.xlarge"}
 
 	for _, plannedResource := range plannedResources {
 		if plannedResource.Type == "aws_instance" {

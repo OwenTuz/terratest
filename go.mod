@@ -37,7 +37,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20201002184944-ecd9fd270d5d // indirect
+	golang.org/x/tools v0.0.0-20201011145850-ed2f50202694 // indirect
 	google.golang.org/api v0.15.0
 	google.golang.org/genproto v0.0.0-20200108215221-bd8f9a0ef82f
 	k8s.io/api v0.18.3
